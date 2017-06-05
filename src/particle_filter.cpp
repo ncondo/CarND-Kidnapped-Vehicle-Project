@@ -24,6 +24,7 @@ using namespace std;
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   // Set number of particles to draw
   num_particles = 2;
+  weights.resize(num_particles);
 
   // Create normal distributions for x, y, and theta based on initial GPS data and their uncertainties
   default_random_engine gen;
@@ -154,7 +155,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                     (predicted[j].y - observations_map[min_idx].y) *
                     (predicted[j].y - observations_map[min_idx].y) /
                     (2 * std_landmark[1] * std_landmark[1]))) /
-                    (2 * M_PI * std_landmark[0] * std_landmark[1]);
+                    (2.0 * M_PI * std_landmark[0] * std_landmark[1]);
         prob = prob * prob_i;
       }
     }
