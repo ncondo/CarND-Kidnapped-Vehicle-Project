@@ -19,7 +19,7 @@
 #include "particle_filter.h"
 
 using namespace std;
-const double PI = 3.14159265358979323846;
+
 
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   // Set number of particles to draw
@@ -154,7 +154,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                     (predicted[j].y - observations_map[min_idx].y) *
                     (predicted[j].y - observations_map[min_idx].y) /
                     (2 * std_landmark[1] * std_landmark[1]))) /
-                    (2 * PI * std_landmark[0] * std_landmark[1]);
+                    (2 * M_PI * std_landmark[0] * std_landmark[1]);
         prob = prob * prob_i;
       }
     }
@@ -164,9 +164,20 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 }
 
 void ParticleFilter::resample() {
-  // TODO: Resample particles with replacement with probability proportional to their weight.
-  // NOTE: You may find std::discrete_distribution helpful here.
-  //   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
+  // Create a discrete distribution for resampling particles with probability proportional
+  // to their weight. Random number generation based on the Mersenne Twister algorithm.
+  // http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::discrete_distribution<int> d(weights.begin(), weights.end());
+  // Resample particles
+  std::vector<Particle> resampled;
+  for (int i = 0; i < num_particles; ++i) {
+    Particle p = particles[d(gen)];
+    resampled.push_back(p);
+  }
+  particles = resampled;
 
 }
 
